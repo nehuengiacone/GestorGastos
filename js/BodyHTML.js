@@ -56,6 +56,7 @@ export default class BodyHTML {
                             <th>Detalle</th>
                             <th>Cuotas</th>
                             <th>Importe</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="gastos_table_body">

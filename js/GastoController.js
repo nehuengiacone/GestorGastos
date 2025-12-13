@@ -60,6 +60,34 @@ export default class GastoController {
     orderByFechaAsc(aColeccion) {
         aColeccion.sort((a,b) => new Date(a.fecha) - new Date(b.fecha)); 
     }
+
+    validarEntradas(oGasto) {
+        if(oGasto.fecha == ""){
+            return "La Fecha está vacía.";
+        }
+
+        if(oGasto.detalle == ""){
+            return "El Detalle está vacío.";
+        }
+
+        if(oGasto.cuotas == ""){
+            return "Las Cuotas están vacías";
+        }
+
+        if(isNaN(oGasto.cuotas)){
+            return "Campo Cuotas: No ingresó un número.";
+        }
+
+        if(oGasto.importe == ""){
+            return "El Importe está vacío.";
+        }
+
+        if(isNaN(oGasto.importe)){
+            return "Campo Importe: No ingresó un número.";
+        }
+
+        return "";
+    }
     // eliminarGasto() {
     //     // Lógica para eliminar un gasto
     // }
