@@ -4,6 +4,7 @@ export default class GastoController {
 
     constructor() {
         this.gasto = undefined;
+        this.prefijoLocalStorage = "GASTOS_";
     }
 
     calcularFechaFinal() {
@@ -16,40 +17,51 @@ export default class GastoController {
         return this.importe / this.cuotas;
     } 
 
-    generarGasto(sFecha, sDetalle, nCuotas, nImporte) {
+    generarGasto(sFecha, sDetalle, nCuotas, nImporte, sClaveLocalStorage='') {
         this.gasto = new Gasto();
         this.gasto.setFecha(sFecha);
         this.gasto.setDetalle(sDetalle);
         this.gasto.setCuotas(nCuotas);
         this.gasto.setImporte(nImporte);
+        this.gasto.setClaveLocalStorage(sClaveLocalStorage);
 
         return this.gasto;
     }
 
     registrarGasto(oGasto) {
         // Lógica para registrar el gasto
-        const lnKeyLocalStorage = localStorage.length + 1;
+        const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
+        oGasto.setClaveLocalStorage(lnKeyLocalStorage);
         localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
     }
 
-    seleccionarGasto(nKey) {
+    seleccionarGasto(sKey) {
         // Lógica para seleccionar un gasto
-        const loGastoData = JSON.parse(localStorage.getItem(nKey));
+        const loGastoData = JSON.parse(localStorage.getItem(sKey));
         if (loGastoData) {
             return this.generarGasto(
                 loGastoData.fecha,
                 loGastoData.detalle,
                 loGastoData.cuotas,
-                loGastoData.importe
+                loGastoData.importe,
+                loGastoData.claveLocalStorage
             );
         }
+    }
+
+    setGasto(oGasto) {
+        this.gasto = oGasto;
+    }
+
+    getGasto() {
+        return this.gasto;
     }
 
     obtenerTodosLosGastos() {
         const laGastos = [];
         for (let nKey = 1; nKey <= localStorage.length; nKey++) {
-            let lnLocalStorageKey = localStorage.key(nKey);
-            let loGastoData = this.seleccionarGasto(lnLocalStorageKey);
+            let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
+            let loGastoData = this.seleccionarGasto(lsLocalStorageKey);
             
             laGastos.push(loGastoData);
         }
@@ -78,8 +90,8 @@ export default class GastoController {
             return "Campo Cuotas: No ingresó un número.";
         }
 
-        if(oGasto.importe == ""){
-            return "El Importe está vacío.";
+        if(oGasto.importe == "" || oGasto.importe == 0){
+            return "El Importe está vacío o es cero.";
         }
 
         if(isNaN(oGasto.importe)){
@@ -88,12 +100,11 @@ export default class GastoController {
 
         return "";
     }
-    // eliminarGasto() {
-    //     // Lógica para eliminar un gasto
-    // }
 
-    // modificarGasto() {
-    //     // Lógica para modificar un gasto
-    // }
+    modificarGasto(oGasto) {
+        // Lógica para modificar un gasto
+        const lsClave = oGasto.getClaveLocalStorage();
+        localStorage.removeItem(lsClave);
+        localStorage.setItem(lsClave, JSON.stringify(oGasto));
+    }
 }
-

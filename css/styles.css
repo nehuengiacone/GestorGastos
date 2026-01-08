@@ -61,6 +61,20 @@ body {
     }
 }
 
+.menu__card--exit {
+    animation: cardExit 0.4s ease-in-out forwards;
+}
+
+@keyframes cardExit {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
 
 .menu__card__titulo {
     width: 100%;

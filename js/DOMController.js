@@ -7,6 +7,24 @@ export default class DOMController {
         this.elemento = undefined;
         this.elementos = undefined;
         this.bodyHTML = new BodyHTML();
+        this.eventsController = undefined;
+        this.dolarController = undefined;
+    }
+
+    setEventsController(oEventsController) {
+        this.eventsController = oEventsController;
+    }
+
+    getEventsController() {
+        return this.eventsController;
+    }
+
+    setDolarController(oDolarController) {
+        this.dolarController = oDolarController;
+    }
+
+    getDolarController() {
+        return this.dolarController;
     }
 
     obtenerElementoById(sIdElemento) {
@@ -38,7 +56,9 @@ export default class DOMController {
     blanquearSection() {
         try{            
             this.elemento = document.getElementsByTagName("section");
-            this.elemento.innerHTML = ``;
+            for (const section of this.elemento) {
+                this.eventsController.setEventoAnimacionSalidaSection(section);
+            }
         }
         catch(error){
             console.error("Error al blanquear la sección:", error);
@@ -46,11 +66,11 @@ export default class DOMController {
     }
 
     generarSectionById(sIdElementoPadre, sIdSection, oGastoController) {
+        // Llamada a los métodos para generar las secciones según el id
         this.elemento = this.obtenerElementoById(sIdElementoPadre);
-
         switch(sIdSection) {
             case "registrar_gasto_section":
-                this.generarRegistrarGastoSection(oGastoController);
+                this.generarRegistrarGastoSection(true);
                 break;
             case "visualizar_gastos_section":
                 this.generarVisualizarGastosSection(oGastoController);
@@ -58,36 +78,25 @@ export default class DOMController {
             case "editar_gasto_section":
                 this.generarEditaGastoSection(oGastoController);
                 break;
+            case "visualizar_cotizacion_dolar_section":
+                this.generarVisualizarCotizacionDolarSection();
+                break;
             default:
-                console.error(`Sección con id ${sIdSection} no reconocida.`);
+                // console.error(`Sección con id ${sIdSection} no reconocida.`);
+                this.eventsController.alertyfy.mostrarAlertaError(`Sección con id ${sIdSection} no reconocida.`);
         }
     }
 
-    generarRegistrarGastoSection(oGastoController) {
+    generarRegistrarGastoSection(registra=false, edita=false) {
         this.elemento.innerHTML = this.bodyHTML.getRegistrarGastoSection();
+        
+        if(registra){    
+            this.eventsController.setEventoRegistrarGastoSection();
+        }
 
-        const loBotonRegistrar = this.obtenerElementoById("registrar");
-        loBotonRegistrar.addEventListener("click", () => {
-            const lsFecha = this.obtenerValorInputById("fechamov");
-            const lsDetalle = this.obtenerValorInputById("detalle");
-            const lnCuotas = parseInt(this.obtenerValorInputById("cuotas"));
-            const lnImporte = parseFloat(this.obtenerValorInputById("importe"));
-
-            const loGasto = oGastoController.generarGasto(lsFecha, lsDetalle, lnCuotas, lnImporte);
-            
-            const lsMensajeValidacion = oGastoController.validarEntradas(loGasto)
-            if(lsMensajeValidacion != ""){
-                alert(lsMensajeValidacion);
-                return;
-            }
-
-            oGastoController.registrarGasto(loGasto);
-
-            console.log('Gasto registrado:', loGasto);
-            alert('Gasto registrado con éxito.\nComo esto es una demo, ver persistencia en LocalStorage.');
-
-            this.blanquearInputsTodos();
-        });
+        if(edita){
+            this.eventsController.setEventoModificarGastoSection();
+        }
     }
 
     generarVisualizarGastosSection(oGastoController) {
@@ -97,17 +106,17 @@ export default class DOMController {
         const laGastos = oGastoController.obtenerTodosLosGastos();
         oGastoController.orderByFechaAsc(laGastos);
 
-        let lnIndex = 0;
+        let lnIndex = 1;
         laGastos.forEach(gasto => {
             if(gasto == undefined) return
 
             const fila = document.createElement('tr');
-            fila.id = lnIndex;
+            fila.id = gasto.getClaveLocalStorage();
             fila.innerHTML = `
-                <td colspan="1">${gasto.fecha}</td>
-                <td colspan="1">${gasto.detalle}</td>
-                <td colspan="1">${gasto.cuotas}</td>
-                <td colspan="1">${gasto.importe}</td>
+                <td colspan="1">${gasto.getFecha()}</td>
+                <td colspan="1">${gasto.getDetalle()}</td>
+                <td colspan="1">${gasto.getCuotas()}</td>
+                <td colspan="1">${gasto.getImporte()}</td>
                 <td colspan="1"><button class="menu__card__boton editar_gastos_btn">Editar</button></td>
             `;
 
@@ -118,20 +127,55 @@ export default class DOMController {
         const loBotonEditarRegistroGasto = this.obtenerElementosByClassName("editar_gastos_btn");
         this.elementos = Array.from(loBotonEditarRegistroGasto);
         this.elementos.forEach(boton => {
-            boton.addEventListener("click", () => {
-                alert("Funcionalidad en desarrollo.");
-                this.elemento = this.getElementById()
-                this.blanquearSection();
-                this.generarSectionById("menu", "editar_gasto_section", oGastoController);
-            });
+            this.eventsController.setEventoLlamarEditarGastoSection(boton);
         });
     }
 
     generarEditaGastoSection(oGastoController){
-        this.generarRegistrarGastoSection(oGastoController);
-        const loFecha = this.getElementById("fechamov");
-        const loDetalle = this.getElementById("detalle");
-        const loCuotas = this.getElementById("cuotas");
-        const loImporte = this.getElementById("importe");
+        this.generarRegistrarGastoSection(false, true);
+        
+        const loFecha = this.obtenerElementoById("fechamov");
+        loFecha.value = oGastoController.getGasto().getFecha();
+        
+        const loDetalle = this.obtenerElementoById("detalle");
+        loDetalle.value = oGastoController.getGasto().getDetalle();
+        
+        const loCuotas = this.obtenerElementoById("cuotas");
+        loCuotas.value = oGastoController.getGasto().getCuotas();
+
+        const loImporte = this.obtenerElementoById("importe");
+        loImporte.value = oGastoController.getGasto().getImporte();
+        
+        const loBotonRegistrar = this.obtenerElementoById("registrar");
+        loBotonRegistrar.textContent = "Guardar Cambios";
+    }
+
+    async generarVisualizarCotizacionDolarSection() {
+        this.eventsController.alertyfy.mostrarAlerta('Funcionalidad en desarrollo.');
+        
+        this.elemento.innerHTML = this.bodyHTML.getVisualizarCotizacionDolarSection();
+        const loTablaCuerpo = this.obtenerElementoById("cotizacion_table_body");
+
+        const cotizaciones = await this.dolarController.consultarCotizacionDolarTodos();
+        const coleccionDolar = this.dolarController.generarColeccionDolarDesdeJSON(cotizaciones);
+
+        let lnIndex = 1;
+        coleccionDolar.forEach(dolar => {
+            if(dolar == undefined) return
+
+            const fila = document.createElement('tr');
+            fila.id = dolar.getNombre();
+            fila.innerHTML = `
+                <td colspan="1">${dolar.getCasa()}</td>
+                <td colspan="1">${dolar.getCompra()}</td>
+                <td colspan="1">${dolar.getVenta()}</td>
+                <td colspan="1">${dolar.getFechaActualizacion()}</td>
+                <!--<td colspan="1">${dolar.getMoneda()}</td>
+                <td colspan="1">${dolar.getNombre()}</td>-->
+            `;
+
+            loTablaCuerpo.appendChild(fila);
+            lnIndex++;  
+        });
     }
 }

@@ -6,6 +6,7 @@ export default class Gasto {
         this.detalle = '';
         this.cuotas = 0;
         this.importe = 0;
+        this.claveLocalStorage = '';
     }
 
     //sets
@@ -25,6 +26,10 @@ export default class Gasto {
         this.importe = nImporte;
     }
 
+    setClaveLocalStorage(sClave) {
+        this.claveLocalStorage = sClave;
+    }
+
     //gets
     getFecha() {
         return this.fecha;
@@ -40,5 +45,9 @@ export default class Gasto {
 
     getImporte() {
         return this.importe;
+    }
+
+    getClaveLocalStorage() {
+        return this.claveLocalStorage;
     }
 }

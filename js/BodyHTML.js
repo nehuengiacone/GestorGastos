@@ -31,6 +31,14 @@ export default class BodyHTML {
                         <option value="18">18</option>
                     </select>
                 </div>
+
+                <div class="card__form__elements">
+                    <label for="cuotas">Moneda</label>
+                    <select name="cuotas" id="cuotas">
+                        <option value="1">PES</option>
+                        <option value="2">USD</option>
+                    </select>
+                </div>
     
                 <div class="card__form__elements">
                     <label for="importe">Importe</label>
@@ -66,5 +74,29 @@ export default class BodyHTML {
             </div>
         </section>`; 
     }
-}
 
+    getVisualizarCotizacionDolarSection() {
+        return `<section class="menu__card_tabla" id="visualizar_cotizacion_dolar_section">
+            <header class="menu__card__titulo">
+                <h2>Cotización Dólar</h2>
+            </header>
+            <div class="menu__card__contenido_tabla">
+                <table class="menu__card__table">
+                    <thead>
+                        <tr>
+                            <th>Casa</th>
+                            <th>Compra</th>
+                            <th>Venta</th>
+                            <th>Fecha Actualización</th>
+                            <!--<th>Moneda</th>
+                            <th>Nombre</th>-->
+                        </tr>
+                    </thead>
+                    <tbody id="cotizacion_table_body">
+                        <!-- Rows apareceran dinamicamente por Js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>`; 
+    }
+}
