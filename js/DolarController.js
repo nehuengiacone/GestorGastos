@@ -17,4 +17,8 @@ export default class DolarController extends DolarAPIController {
 
         return this.coleccionDolar;
     }
+
+    blanquearColeccionDolar() {
+        this.coleccionDolar = [];
+    }
 }

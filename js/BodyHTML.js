@@ -33,10 +33,10 @@ export default class BodyHTML {
                 </div>
 
                 <div class="card__form__elements">
-                    <label for="cuotas">Moneda</label>
-                    <select name="cuotas" id="cuotas">
-                        <option value="1">PES</option>
-                        <option value="2">USD</option>
+                    <label for="moneda">Moneda</label>
+                    <select name="moneda" id="moneda">
+                        <option value="PES">PES</option>
+                        <option value="USD">USD</option>
                     </select>
                 </div>
     
@@ -63,7 +63,9 @@ export default class BodyHTML {
                             <th>Fecha</th>
                             <th>Detalle</th>
                             <th>Cuotas</th>
+                            <th>Cuota</th>
                             <th>Importe</th>
+                            <th>Moneda</th>
                             <th>Acción</th>
                         </tr>
                     </thead>

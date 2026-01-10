@@ -80,6 +80,7 @@ export default class EventsController {
         const lsDetalle = this.DOMController.obtenerValorInputById("detalle");
         const lnCuotas = parseInt(this.DOMController.obtenerValorInputById("cuotas"));
         const lnImporte = parseFloat(this.DOMController.obtenerValorInputById("importe"));
+        const lsMoneda = this.DOMController.obtenerValorInputById("moneda");
 
         let lsClaveLocalStorage = '';
         if(this.GastoController.getGasto() != undefined){
@@ -88,7 +89,7 @@ export default class EventsController {
             }
         }
 
-        const loGasto = this.GastoController.generarGasto(lsFecha, lsDetalle, lnCuotas, lnImporte, lsClaveLocalStorage);
+        const loGasto = this.GastoController.generarGasto(lsFecha, lsDetalle, lnCuotas, 0, lnImporte, lsMoneda, lsClaveLocalStorage);
 
         const lsMensajeValidacion = this.GastoController.validarEntradas(loGasto);
         if(lsMensajeValidacion != ""){

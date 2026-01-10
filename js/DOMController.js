@@ -116,7 +116,9 @@ export default class DOMController {
                 <td colspan="1">${gasto.getFecha()}</td>
                 <td colspan="1">${gasto.getDetalle()}</td>
                 <td colspan="1">${gasto.getCuotas()}</td>
+                <td colspan="1">${gasto.getCuota()}</td>
                 <td colspan="1">${gasto.getImporte()}</td>
+                <td colspan="1">${gasto.getMoneda()}</td>
                 <td colspan="1"><button class="menu__card__boton editar_gastos_btn">Editar</button></td>
             `;
 
@@ -142,6 +144,7 @@ export default class DOMController {
         
         const loCuotas = this.obtenerElementoById("cuotas");
         loCuotas.value = oGastoController.getGasto().getCuotas();
+        loCuotas.disabled = true;
 
         const loImporte = this.obtenerElementoById("importe");
         loImporte.value = oGastoController.getGasto().getImporte();
@@ -152,7 +155,7 @@ export default class DOMController {
 
     async generarVisualizarCotizacionDolarSection() {
         this.eventsController.alertyfy.mostrarAlerta('Funcionalidad en desarrollo.');
-        
+
         this.elemento.innerHTML = this.bodyHTML.getVisualizarCotizacionDolarSection();
         const loTablaCuerpo = this.obtenerElementoById("cotizacion_table_body");
 
@@ -175,6 +178,7 @@ export default class DOMController {
             `;
 
             loTablaCuerpo.appendChild(fila);
+            this.dolarController.blanquearColeccionDolar();
             lnIndex++;  
         });
     }

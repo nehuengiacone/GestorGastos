@@ -5,7 +5,9 @@ export default class Gasto {
         this.fecha = '';
         this.detalle = '';
         this.cuotas = 0;
+        this.cuota = 0;
         this.importe = 0;
+        this.moneda = '';
         this.claveLocalStorage = '';
     }
 
@@ -22,8 +24,16 @@ export default class Gasto {
         this.cuotas = nCuotas;
     }
 
+    setCuota(nCuota) {
+        this.cuota = nCuota;
+    }
+
     setImporte(nImporte) {
         this.importe = nImporte;
+    }
+
+    setMoneda(sMoneda) {
+        this.moneda = sMoneda;
     }
 
     setClaveLocalStorage(sClave) {
@@ -43,8 +53,16 @@ export default class Gasto {
         return this.cuotas;
     }
 
+    getCuota() {
+        return this.cuota;
+    }
+
     getImporte() {
         return this.importe;
+    }
+
+    getMoneda() {
+        return this.moneda;
     }
 
     getClaveLocalStorage() {

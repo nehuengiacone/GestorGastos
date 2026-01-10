@@ -7,22 +7,30 @@ export default class GastoController {
         this.prefijoLocalStorage = "GASTOS_";
     }
 
-    calcularFechaFinal() {
-        let fechaFinal = new Date(this.fecha);
-        fechaFinal.setMonth(fechaFinal.getMonth() + this.cuotas);
-        return fechaFinal;
+    calcularFecha(numero) {
+        let fecha = new Date();
+        fecha.setMonth(fecha.getMonth() + numero);
+        fecha = fecha.toISOString().split('T')[0];
+        return fecha;
     }
 
     calcularImportePorCuota() {
         return this.importe / this.cuotas;
-    } 
+    }
+    
+    redondearADecimal(numero, decimales) {
+        const factor = Math.pow(10, decimales);
+        return Math.round(numero * factor) / factor;
+    }
 
-    generarGasto(sFecha, sDetalle, nCuotas, nImporte, sClaveLocalStorage='') {
+    generarGasto(sFecha, sDetalle, nCuotas, nCuota,nImporte, sMoneda, sClaveLocalStorage='') {
         this.gasto = new Gasto();
         this.gasto.setFecha(sFecha);
         this.gasto.setDetalle(sDetalle);
         this.gasto.setCuotas(nCuotas);
+        this.gasto.setCuota(nCuota);
         this.gasto.setImporte(nImporte);
+        this.gasto.setMoneda(sMoneda);
         this.gasto.setClaveLocalStorage(sClaveLocalStorage);
 
         return this.gasto;
@@ -30,9 +38,16 @@ export default class GastoController {
 
     registrarGasto(oGasto) {
         // Lógica para registrar el gasto
-        const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
-        oGasto.setClaveLocalStorage(lnKeyLocalStorage);
-        localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
+        const importePorCuota = oGasto.getImporte() / oGasto.getCuotas();
+        for (let cuota = 1; cuota <= oGasto.getCuotas(); cuota++) {
+            const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
+            oGasto.setFecha(this.calcularFecha(cuota));
+            oGasto.setImporte(this.redondearADecimal(importePorCuota, 2));
+            oGasto.setCuota(cuota);
+            oGasto.setClaveLocalStorage(lnKeyLocalStorage);
+            localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
+        }
+
     }
 
     seleccionarGasto(sKey) {
@@ -43,7 +58,9 @@ export default class GastoController {
                 loGastoData.fecha,
                 loGastoData.detalle,
                 loGastoData.cuotas,
+                loGastoData.cuota,
                 loGastoData.importe,
+                loGastoData.moneda,
                 loGastoData.claveLocalStorage
             );
         }
