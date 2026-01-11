@@ -71,8 +71,10 @@ export default class EventsController {
                         const loGastoCuotificado = this.GastoController.seleccionarGastoCuotificado(oGastoSeleccionado.getCupon(), oGastoSeleccionado.getDetalle());
 
                         if(loGastoCuotificado != null){
-                            loGastoCuotificado[cuota-1].setEstado(false);
-                            this.GastoController.modificarGasto(loGastoCuotificado[cuota-1]);
+                            loGastoCuotificado.forEach(oGasto => {
+                                oGasto.setEstado(false);
+                                this.GastoController.modificarGasto(oGasto);
+                            });
                         }
                     } 
                     else {
