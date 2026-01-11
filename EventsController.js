@@ -78,6 +78,7 @@ export default class EventsController {
                         }
                     } 
                     else {
+                        oGastoSeleccionado.setEstado(false);
                         this.GastoController.modificarGasto(oGastoSeleccionado);
                     }
 
