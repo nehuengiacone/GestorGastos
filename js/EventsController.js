@@ -68,17 +68,16 @@ export default class EventsController {
             this.alertyfy.mostrarConfirmacion(lcMensajeConfirmacion, 
                 () => {
                     if(lnAccionEliminarTodasLasCuotas){
-                        for(let cuota = 1; cuota <= oGastoSeleccionado.getCuotas(); cuota++){
-                            const loGastoCuotificado = this.GastoController.seleccionarGastoCuotificado(oGastoSeleccionado.getCupon());
+                        const loGastoCuotificado = this.GastoController.seleccionarGastoCuotificado(oGastoSeleccionado.getCupon(), oGastoSeleccionado.getDetalle());
 
-                            if(loGastoCuotificado != null){
-                                loGastoCuotificado[cuota-1].setEstado(false);
-                                this.GastoController.modificarGasto(loGastoCuotificado[cuota-1]);
-                            }
+                        if(loGastoCuotificado != null){
+                            loGastoCuotificado[cuota-1].setEstado(false);
+                            this.GastoController.modificarGasto(loGastoCuotificado[cuota-1]);
                         }
                     } 
                     else {
-                        this.GastoController.eliminarGasto(oGastoSeleccionado.getClaveLocalStorage());
+                        oGastoSeleccionado.setEstado(false);
+                        this.GastoController.modificarGasto(oGastoSeleccionado);
                     }
 
                     this.DOMController.blanquearSection();

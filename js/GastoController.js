@@ -70,14 +70,15 @@ export default class GastoController {
         }
     }
 
-    seleccionarGastoCuotificado(sCupon) {
+    seleccionarGastoCuotificado(sCupon, sDetalle) {
         // Lógica para se[leccionar un gasto cuotificado por cupón
         const laGastos = [];
         for (let nKey = 1; nKey <= localStorage.length; nKey++) {
             let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
             let loGastoData = this.seleccionarGasto(lsLocalStorageKey);
 
-            if (loGastoData && loGastoData.getCupon() === sCupon) {
+            if (loGastoData && loGastoData.getCupon() === sCupon && loGastoData.getEstado() && 
+                loGastoData.getDetalle() == sDetalle) {
                 laGastos.push(loGastoData);
             }
         }
