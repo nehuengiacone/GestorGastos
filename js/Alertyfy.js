@@ -15,6 +15,19 @@ export default class Alertyfy {
         alertify.warning(mensaje, 2); 
     }
 
+    static mostrarConfirmacion(mensaje, fActionOk, fActionCancel) {
+        let settings = {
+            'label': 'ACEPTAR',
+            'title': 'Confirmación',
+            'message': mensaje,
+            'modal': true,
+            'closable': false,
+            'onok': () => fActionOk(),
+            'oncancel': () => fActionCancel()
+        };
+        alertify.confirm(mensaje).setting(settings).show();
+    }
+
     static mostrarAlerta(mensaje, modal=true) {
 
         let settings = {

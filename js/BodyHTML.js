@@ -14,7 +14,12 @@ export default class BodyHTML {
                     <label for="fechamov">Fecha</label>
                     <input type="date" name="fechamov" id="fechamov">
                 </div>
-    
+                
+                <div class="card__form__elements">
+                    <label for="cupon">Cupón</label>
+                    <input type="text" name="cupon" id="cupon">
+                </div>
+
                 <div class="card__form__elements">
                     <label for="detalle">Detalle</label>
                     <input type="text" name="detalle" id="detalle">
@@ -61,6 +66,7 @@ export default class BodyHTML {
                     <thead>
                         <tr>
                             <th>Fecha</th>
+                            <th>Cupon</th>
                             <th>Detalle</th>
                             <th>Cuotas</th>
                             <th>Cuota</th>

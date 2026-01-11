@@ -51,6 +51,44 @@ export default class EventsController {
         });
     }
 
+    setEventoEliminarGastoSection(oBoton) {
+
+        oBoton.addEventListener("click", () => {
+            const sIDFilaPadre = oBoton.parentElement.parentElement.id;    // Obtener el ID de la fila padre
+            const oGastoSeleccionado = this.GastoController.seleccionarGasto(sIDFilaPadre);
+
+            const lnAccionEliminarTodasLasCuotas = oGastoSeleccionado.getCuotas() > 1 ? true : false;
+            const lcMensajeConfirmacion = lnAccionEliminarTodasLasCuotas ?
+            `Va a eliminar el gasto detallado como "${oGastoSeleccionado.getDetalle()}" que tiene ${oGastoSeleccionado.getCuotas()} cuotas. 
+            Al eliminarlo, se eliminarán todas las cuotas asociadas.\n¿Está seguro que desea eliminar este gasto y todas sus cuotas?` 
+            :
+            `Va a eliminar el gasto detallado como "${oGastoSeleccionado.getDetalle()}"
+            ¿Está seguro que desea eliminar este gasto?`;
+
+            this.alertyfy.mostrarConfirmacion(lcMensajeConfirmacion, 
+                () => {
+                    if(lnAccionEliminarTodasLasCuotas){
+                        for(let cuota = 1; cuota <= oGastoSeleccionado.getCuotas(); cuota++){
+                            const loGastoCuotificado = this.GastoController.seleccionarGastoCuotificado(oGastoSeleccionado.getCupon());
+
+                            if(loGastoCuotificado != null){
+                                loGastoCuotificado[cuota-1].setEstado(false);
+                                this.GastoController.modificarGasto(loGastoCuotificado[cuota-1]);
+                            }
+                        }
+                    } 
+                    else {
+                        this.GastoController.eliminarGasto(oGastoSeleccionado.getClaveLocalStorage());
+                    }
+
+                    this.DOMController.blanquearSection();
+                    this.DOMController.generarSectionById("menu", "visualizar_gastos_section", this.GastoController);
+                },
+                () => {}
+            );
+        });
+    }
+
     setEventoInvocarSection(sIdSection) {
         // asigna evento al botón del navbar
         const loBotonNavBar = this.DOMController.obtenerElementoById(sIdSection);
@@ -77,19 +115,22 @@ export default class EventsController {
 
     eventoGrabarGastoSection(accion='') {
         const lsFecha = this.DOMController.obtenerValorInputById("fechamov");
+        const lsCupon = this.DOMController.obtenerValorInputById("cupon");
         const lsDetalle = this.DOMController.obtenerValorInputById("detalle");
         const lnCuotas = parseInt(this.DOMController.obtenerValorInputById("cuotas"));
+        let lnCuota = 0; 
         const lnImporte = parseFloat(this.DOMController.obtenerValorInputById("importe"));
         const lsMoneda = this.DOMController.obtenerValorInputById("moneda");
 
         let lsClaveLocalStorage = '';
         if(this.GastoController.getGasto() != undefined){
             if(this.GastoController.getGasto().getClaveLocalStorage() != ''){
+                lnCuota = this.GastoController.getGasto().getCuota();
                 lsClaveLocalStorage = this.GastoController.getGasto().getClaveLocalStorage();
             }
         }
 
-        const loGasto = this.GastoController.generarGasto(lsFecha, lsDetalle, lnCuotas, 0, lnImporte, lsMoneda, lsClaveLocalStorage);
+        const loGasto = this.GastoController.generarGasto(lsFecha, lsCupon, lsDetalle, lnCuotas, lnCuota, lnImporte, lsMoneda, lsClaveLocalStorage);
 
         const lsMensajeValidacion = this.GastoController.validarEntradas(loGasto);
         if(lsMensajeValidacion != ""){

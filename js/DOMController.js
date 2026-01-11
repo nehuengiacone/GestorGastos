@@ -103,7 +103,7 @@ export default class DOMController {
         this.elemento.innerHTML = this.bodyHTML.getVisualizarGastosSection();
         const loTablaCuerpo = this.obtenerElementoById("gastos_table_body");
 
-        const laGastos = oGastoController.obtenerTodosLosGastos();
+        const laGastos = oGastoController.obtenerTodosLosGastosHabilitados();
         oGastoController.orderByFechaAsc(laGastos);
 
         let lnIndex = 1;
@@ -114,23 +114,43 @@ export default class DOMController {
             fila.id = gasto.getClaveLocalStorage();
             fila.innerHTML = `
                 <td colspan="1">${gasto.getFecha()}</td>
+                <td colspan="1">${gasto.getCupon()}</td>
                 <td colspan="1">${gasto.getDetalle()}</td>
                 <td colspan="1">${gasto.getCuotas()}</td>
                 <td colspan="1">${gasto.getCuota()}</td>
                 <td colspan="1">${gasto.getImporte()}</td>
                 <td colspan="1">${gasto.getMoneda()}</td>
-                <td colspan="1"><button class="menu__card__boton editar_gastos_btn">Editar</button></td>
+                <td colspan="1"><button class="menu__card__boton editar_gastos_btn"><i class="bi bi-pencil-square"></i> Editar</button>
+                <button class="delete__card__boton eliminar_gastos_btn"><i class="bi bi-trash"></i> Eliminar</button>
+                </td>
             `;
 
             loTablaCuerpo.appendChild(fila);
             lnIndex++;  
         });
 
-        const loBotonEditarRegistroGasto = this.obtenerElementosByClassName("editar_gastos_btn");
-        this.elementos = Array.from(loBotonEditarRegistroGasto);
-        this.elementos.forEach(boton => {
-            this.eventsController.setEventoLlamarEditarGastoSection(boton);
-        });
+        this.inicializarEventosBotones("editar_gastos_btn");
+        this.inicializarEventosBotones("eliminar_gastos_btn");
+    }
+
+    inicializarEventosBotones(sNombreClase) {
+        const loBoton = this.obtenerElementosByClassName(sNombreClase);
+        this.elementos = Array.from(loBoton);
+
+        switch(sNombreClase) {
+            case "editar_gastos_btn":
+                this.elementos.forEach(boton => {
+                    this.eventsController.setEventoLlamarEditarGastoSection(boton);
+                });
+                break;
+            case "eliminar_gastos_btn":
+                this.elementos.forEach(boton => {
+                    this.eventsController.setEventoEliminarGastoSection(boton);
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     generarEditaGastoSection(oGastoController){
@@ -139,6 +159,10 @@ export default class DOMController {
         const loFecha = this.obtenerElementoById("fechamov");
         loFecha.value = oGastoController.getGasto().getFecha();
         
+        const loCupon = this.obtenerElementoById("cupon");
+        loCupon.value = oGastoController.getGasto().getCupon();
+        loCupon.disabled = true;
+
         const loDetalle = this.obtenerElementoById("detalle");
         loDetalle.value = oGastoController.getGasto().getDetalle();
         

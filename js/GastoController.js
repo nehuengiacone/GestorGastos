@@ -23,15 +23,17 @@ export default class GastoController {
         return Math.round(numero * factor) / factor;
     }
 
-    generarGasto(sFecha, sDetalle, nCuotas, nCuota,nImporte, sMoneda, sClaveLocalStorage='') {
+    generarGasto(sFecha, sCupon, sDetalle, nCuotas, nCuota, nImporte, sMoneda, sClaveLocalStorage='', bEstado=true) {
         this.gasto = new Gasto();
         this.gasto.setFecha(sFecha);
+        this.gasto.setCupon(sCupon);
         this.gasto.setDetalle(sDetalle);
         this.gasto.setCuotas(nCuotas);
         this.gasto.setCuota(nCuota);
         this.gasto.setImporte(nImporte);
         this.gasto.setMoneda(sMoneda);
         this.gasto.setClaveLocalStorage(sClaveLocalStorage);
+        this.gasto.setEstado(bEstado);
 
         return this.gasto;
     }
@@ -39,6 +41,7 @@ export default class GastoController {
     registrarGasto(oGasto) {
         // Lógica para registrar el gasto
         const importePorCuota = oGasto.getImporte() / oGasto.getCuotas();
+        
         for (let cuota = 1; cuota <= oGasto.getCuotas(); cuota++) {
             const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
             oGasto.setFecha(this.calcularFecha(cuota));
@@ -47,7 +50,6 @@ export default class GastoController {
             oGasto.setClaveLocalStorage(lnKeyLocalStorage);
             localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
         }
-
     }
 
     seleccionarGasto(sKey) {
@@ -56,14 +58,35 @@ export default class GastoController {
         if (loGastoData) {
             return this.generarGasto(
                 loGastoData.fecha,
+                loGastoData.cupon,
                 loGastoData.detalle,
                 loGastoData.cuotas,
                 loGastoData.cuota,
                 loGastoData.importe,
                 loGastoData.moneda,
-                loGastoData.claveLocalStorage
+                loGastoData.claveLocalStorage,
+                loGastoData.estado
             );
         }
+    }
+
+    seleccionarGastoCuotificado(sCupon) {
+        // Lógica para se[leccionar un gasto cuotificado por cupón
+        const laGastos = [];
+        for (let nKey = 1; nKey <= localStorage.length; nKey++) {
+            let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
+            let loGastoData = this.seleccionarGasto(lsLocalStorageKey);
+
+            if (loGastoData && loGastoData.getCupon() === sCupon) {
+                laGastos.push(loGastoData);
+            }
+        }
+
+        if(laGastos.length > 0){
+            return laGastos;
+        }
+
+        return null
     }
 
     setGasto(oGasto) {
@@ -74,11 +97,26 @@ export default class GastoController {
         return this.gasto;
     }
 
+    obtenerTodosLosGastosHabilitados() {
+        const laGastos = [];
+        for (let nKey = 1; nKey <= localStorage.length; nKey++) {
+            const key = localStorage.key(nKey - 1);
+            // let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
+            let loGastoData = this.seleccionarGasto(key);
+            
+            if(!loGastoData.getEstado()) continue;
+            laGastos.push(loGastoData);
+        }
+
+        return laGastos;
+    }
+
     obtenerTodosLosGastos() {
         const laGastos = [];
         for (let nKey = 1; nKey <= localStorage.length; nKey++) {
-            let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
-            let loGastoData = this.seleccionarGasto(lsLocalStorageKey);
+            const key = localStorage.key(nKey - 1);
+            // let lsLocalStorageKey = this.prefijoLocalStorage + nKey;
+            let loGastoData = this.seleccionarGasto(key);
             
             laGastos.push(loGastoData);
         }
@@ -93,6 +131,10 @@ export default class GastoController {
     validarEntradas(oGasto) {
         if(oGasto.fecha == ""){
             return "La Fecha está vacía.";
+        }
+
+        if(oGasto.cupon == ""){
+            return "El Cupón está vacío.";
         }
 
         if(oGasto.detalle == ""){
@@ -124,4 +166,8 @@ export default class GastoController {
         localStorage.removeItem(lsClave);
         localStorage.setItem(lsClave, JSON.stringify(oGasto));
     }
+
+    // eliminarGasto(sClaveLocalStorage) {
+    //     localStorage.removeItem(sClaveLocalStorage);
+    // }
 }
