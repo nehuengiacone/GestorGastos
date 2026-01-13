@@ -116,6 +116,10 @@ body {
     margin: 0.5rem 0;
 }
 
+.card__form__elements, select, button {
+    margin: 0 0.5rem;
+}
+
 .menu__card__boton {
     margin-top: 1rem;
     padding: 0.5rem 1rem;
