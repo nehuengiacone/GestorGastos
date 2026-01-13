@@ -3,6 +3,8 @@ export default class Gasto {
 
     constructor() {
         this.fecha = '';
+        this.mes = '';
+        this.anio = '';
         this.cupon = '';
         this.detalle = '';
         this.cuotas = 0;
@@ -53,6 +55,14 @@ export default class Gasto {
     //gets
     getFecha() {
         return this.fecha;
+    }
+
+    getAnio() {
+        return new Date(this.fecha).getFullYear().toString();
+    }
+
+    getMes() { 
+        return new Date(this.fecha).getMonth().toString();
     }
 
     getCupon() {

@@ -7,11 +7,11 @@ export default class GastoController {
         this.prefijoLocalStorage = "GASTOS_";
     }
 
-    calcularFecha(numero) {
-        let fecha = new Date();
-        fecha.setMonth(fecha.getMonth() + numero);
-        fecha = fecha.toISOString().split('T')[0];
-        return fecha;
+    calcularFecha(nNumero, sFecha) {
+        let loFecha = new Date(sFecha);
+        loFecha.setMonth(loFecha.getMonth() + nNumero);
+        loFecha = loFecha.toISOString().split('T')[0];
+        return loFecha;
     }
 
     calcularImportePorCuota() {
@@ -44,9 +44,9 @@ export default class GastoController {
         
         for (let cuota = 1; cuota <= oGasto.getCuotas(); cuota++) {
             const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
-            oGasto.setFecha(this.calcularFecha(cuota));
+            oGasto.setFecha(this.calcularFecha(cuota, oGasto.getFecha()));
             oGasto.setImporte(this.redondearADecimal(importePorCuota, 2));
-            oGasto.setCuota(cuota);
+            oGasto.setCuota(cuota); 
             oGasto.setClaveLocalStorage(lnKeyLocalStorage);
             localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
         }
@@ -125,6 +125,15 @@ export default class GastoController {
         return laGastos;
     }
 
+    obtenerTodosLosGastosPorFiltro(sMes, sAnio){
+        const laGastos = this.obtenerTodosLosGastosHabilitados();
+        const laGastosFiltrados = laGastos.filter((oGasto) => {
+            return (oGasto.getAnio() == sAnio && oGasto.getMes() == sMes)
+        });
+
+        return laGastosFiltrados;
+    }
+
     orderByFechaAsc(aColeccion) {
         aColeccion.sort((a,b) => new Date(a.fecha) - new Date(b.fecha)); 
     }
@@ -167,8 +176,4 @@ export default class GastoController {
         localStorage.removeItem(lsClave);
         localStorage.setItem(lsClave, JSON.stringify(oGasto));
     }
-
-    // eliminarGasto(sClaveLocalStorage) {
-    //     localStorage.removeItem(sClaveLocalStorage);
-    // }
 }

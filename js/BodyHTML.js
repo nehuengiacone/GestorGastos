@@ -62,6 +62,35 @@ export default class BodyHTML {
                 <h2>Gastos</h2>
             </header>
             <div class="menu__card__contenido_tabla">
+                <div class="card__form__elements">
+                    <label for="mes">Mes</label>
+                    <select name="mes" id="mes">
+                        <option value="0">Enero</option>
+                        <option value="1">Febrero</option>
+                        <option value="2">Marzo</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Mayo</option>
+                        <option value="5">Junio</option>
+                        <option value="6">Julio</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Septiembre</option>
+                        <option value="9">Octubre</option>
+                        <option value="10">Noviembre</option>
+                        <option value="11">diciembre</option>
+                    </select>
+
+                    <label for="anio">Año</label>
+                    <select name="anio" id="anio">
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                    <button class="menu__card__boton filtrar_gastos_btn"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <button class="delete__card__boton limpiar_filtro_btn"><i class="bi bi-x-circle-fill"></i> Limpiar Filtro</button>
+                </div>
+
                 <table class="menu__card__table">
                     <thead>
                         <tr>

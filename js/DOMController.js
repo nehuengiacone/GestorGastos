@@ -65,6 +65,11 @@ export default class DOMController {
         }
     }
 
+    blanquearFiltroVisualizarGastos(oGastoController) {
+        Array.from(this.obtenerElementosByTagName("td")).forEach(elemento => elemento.remove()); //blanqueo la row
+        this.generarVisualizarGastosSection(oGastoController, false, true);
+    }
+
     generarSectionById(sIdElementoPadre, sIdSection, oGastoController) {
         // Llamada a los métodos para generar las secciones según el id
         this.elemento = this.obtenerElementoById(sIdElementoPadre);
@@ -74,6 +79,9 @@ export default class DOMController {
                 break;
             case "visualizar_gastos_section":
                 this.generarVisualizarGastosSection(oGastoController);
+                break;
+            case "visualizar_gastos_filtrados_section":
+                this.generarVisualizarGastosSection(oGastoController, true);
                 break;
             case "editar_gasto_section":
                 this.generarEditaGastoSection(oGastoController);
@@ -99,15 +107,39 @@ export default class DOMController {
         }
     }
 
-    generarVisualizarGastosSection(oGastoController) {
-        this.elemento.innerHTML = this.bodyHTML.getVisualizarGastosSection();
-        const loTablaCuerpo = this.obtenerElementoById("gastos_table_body");
+    generarVisualizarGastosSection(oGastoController, esFiltrado=false, limpiarFiltro=false) {
+        let laGastos = [];
+        if(esFiltrado) {
+            const lsMes = this.obtenerElementoById("mes").value;
+            const lsAnio = this.obtenerElementoById("anio").value;
+            laGastos = oGastoController.obtenerTodosLosGastosPorFiltro(lsMes, lsAnio);
+            Array.from(this.obtenerElementosByTagName("td")).forEach(elemento => elemento.remove()); //blanqueo la row
+            oGastoController.orderByFechaAsc(laGastos);
+            this.generarFilasVisualizarGastos(laGastos);
 
-        const laGastos = oGastoController.obtenerTodosLosGastosHabilitados();
+            return esFiltrado;
+        }
+
+        if(!limpiarFiltro){
+            this.elemento.innerHTML = this.bodyHTML.getVisualizarGastosSection();
+        }
+        
+        laGastos = oGastoController.obtenerTodosLosGastosHabilitados();
         oGastoController.orderByFechaAsc(laGastos);
+        this.generarFilasVisualizarGastos(laGastos);
 
+        this.inicializarEventosBotones("filtrar_gastos_btn");
+        this.inicializarEventosBotones("limpiar_filtro_btn", oGastoController);
+        this.inicializarEventosBotones("editar_gastos_btn");
+        this.inicializarEventosBotones("eliminar_gastos_btn");
+
+        return esFiltrado;
+    }
+
+    generarFilasVisualizarGastos(aGastos) {
+        const loTablaCuerpo = this.obtenerElementoById("gastos_table_body");
         let lnIndex = 1;
-        laGastos.forEach(gasto => {
+        aGastos.forEach(gasto => {
             if(gasto == undefined) return
 
             const fila = document.createElement('tr');
@@ -128,16 +160,22 @@ export default class DOMController {
             loTablaCuerpo.appendChild(fila);
             lnIndex++;  
         });
-
-        this.inicializarEventosBotones("editar_gastos_btn");
-        this.inicializarEventosBotones("eliminar_gastos_btn");
     }
 
-    inicializarEventosBotones(sNombreClase) {
+    inicializarEventosBotones(sNombreClase, oGastoController=null) {
         const loBoton = this.obtenerElementosByClassName(sNombreClase);
         this.elementos = Array.from(loBoton);
 
+        let oBoton = undefined;
         switch(sNombreClase) {
+            case "filtrar_gastos_btn":
+                oBoton = this.elementos[0];
+                this.eventsController.setEventoBusquedaFiltradaDeGastoSection(oBoton);
+                break;
+            case "limpiar_filtro_btn":
+                oBoton = this.elementos[0];
+                this.eventsController.setEventoLimpiarFiltroDeGastoSection(oBoton, oGastoController);
+                break;
             case "editar_gastos_btn":
                 this.elementos.forEach(boton => {
                     this.eventsController.setEventoLlamarEditarGastoSection(boton);

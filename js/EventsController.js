@@ -46,8 +46,7 @@ export default class EventsController {
             const sIDFilaPadre = oBoton.parentElement.parentElement.id;    // Obtener el ID de la fila padre
             const oGastoSeleccionado = this.GastoController.seleccionarGasto(sIDFilaPadre);
             this.GastoController.setGasto(oGastoSeleccionado);
-            this.DOMController.blanquearSection();
-            this.DOMController.generarSectionById("menu", "editar_gasto_section", this.GastoController);
+            this.setEventoInvocarSection("editar_gasto_section")
         });
     }
 
@@ -76,17 +75,29 @@ export default class EventsController {
                                 this.GastoController.modificarGasto(oGasto);
                             });
                         }
+                        
+                        this.eventoInvocarSection("visualizar_gastos_section");
+                        return undefined;
                     } 
-                    else {
-                        oGastoSeleccionado.setEstado(false);
-                        this.GastoController.modificarGasto(oGastoSeleccionado);
-                    }
 
-                    this.DOMController.blanquearSection();
-                    this.DOMController.generarSectionById("menu", "visualizar_gastos_section", this.GastoController);
+                    oGastoSeleccionado.setEstado(false);
+                    this.GastoController.modificarGasto(oGastoSeleccionado);
+                    this.eventoInvocarSection("visualizar_gastos_section");
                 },
                 () => {}
             );
+        });
+    }
+
+    setEventoBusquedaFiltradaDeGastoSection(oBoton) {
+        oBoton.addEventListener("click", () => {
+            this.DOMController.generarSectionById("menu", "visualizar_gastos_filtrados_section", this.GastoController);
+        });
+    }
+
+    setEventoLimpiarFiltroDeGastoSection(oBoton, oGastoController) {
+        oBoton.addEventListener("click", () => {
+            this.DOMController.blanquearFiltroVisualizarGastos(oGastoController);
         });
     }
 
