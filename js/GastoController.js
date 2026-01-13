@@ -44,7 +44,7 @@ export default class GastoController {
         
         for (let cuota = 1; cuota <= oGasto.getCuotas(); cuota++) {
             const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
-            oGasto.setFecha(this.calcularFecha(cuota, oGasto.getFecha()));
+            oGasto.setFecha(this.calcularFecha(cuota-1, oGasto.getFecha()));
             oGasto.setImporte(this.redondearADecimal(importePorCuota, 2));
             oGasto.setCuota(cuota); 
             oGasto.setClaveLocalStorage(lnKeyLocalStorage);
