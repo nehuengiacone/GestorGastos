@@ -41,7 +41,7 @@ export default class GastoController {
     registrarGasto(oGasto) {
         // Lógica para registrar el gasto
         const importePorCuota = oGasto.getImporte() / oGasto.getCuotas();
-        
+        const fechaIngresada = oGasto.getFecha();
         for (let cuota = 1; cuota <= oGasto.getCuotas(); cuota++) {
             const lnKeyLocalStorage = this.prefijoLocalStorage + (localStorage.length + 1);
             oGasto.setFecha(this.calcularFecha(cuota-1, oGasto.getFecha()));
@@ -49,6 +49,7 @@ export default class GastoController {
             oGasto.setCuota(cuota); 
             oGasto.setClaveLocalStorage(lnKeyLocalStorage);
             localStorage.setItem(lnKeyLocalStorage, JSON.stringify(oGasto));
+            oGasto.setFecha(fechaIngresada); //regreso a la fecha ingresada
         }
     }
 
