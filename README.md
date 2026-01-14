@@ -1,7 +1,9 @@
 <h1>Gestionador de gastos de tarjetas de créditos.</h1>
 
 Este sitio es el proyecto final entregable para el curso de JavaScript brindado por CoderHouse. 
-Es posible que con el tiempo, el sitio crezca en funcionalidades.
+Es posible que con el tiempo, el sitio crezca en funcionalidades.<br>
+Los datos almacenados se guardan en el Local Storage del navegador. **NO** hay una base de datos para la persistencia de la información.
+Pueden acceder al sitio online desde https://nehuengiacone.github.io/GestorGastos/
 
 <h2>Funcionalidades:</h2>
 
